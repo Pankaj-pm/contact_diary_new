@@ -1,6 +1,8 @@
-import 'package:contact_diary/counter_provider.dart';
-import 'package:contact_diary/detail_page.dart';
-import 'package:contact_diary/theme_provider.dart';
+import 'package:contact_diary/controller/counter_provider.dart';
+import 'package:contact_diary/view/contact_list.dart';
+import 'package:contact_diary/view/detail_page.dart';
+import 'package:contact_diary/view/login_page.dart';
+import 'package:contact_diary/controller/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,12 +21,13 @@ class _HomepageState extends State<Homepage> {
   void initState() {
     super.initState();
   }
+
   @override
   void didChangeDependencies() {
     SharedPreferences.getInstance().then((value) {
       var themeMode = value.getInt("themeMode");
       print("My Save Val $themeMode");
-      Provider.of<ThemeProvider>(context,listen: false).changeTheme(themeMode??0);
+      Provider.of<ThemeProvider>(context, listen: false).changeTheme(themeMode ?? 0);
     });
     super.didChangeDependencies();
   }
@@ -33,7 +36,23 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     print("Build");
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.red,
+        actions: [
+          IconButton(
+            onPressed: () async {
+              var instance = await SharedPreferences.getInstance();
+              instance.setBool("isLogin", false);
+              Navigator.pushReplacement(context, MaterialPageRoute(
+                builder: (context) {
+                  return LoginPage();
+                },
+              ));
+            },
+            icon: Icon(Icons.logout),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Consumer<CounterProvider>(
@@ -69,7 +88,7 @@ class _HomepageState extends State<Homepage> {
                   DropdownMenuItem(child: Text("Light"), value: 1),
                   DropdownMenuItem(child: Text("Dark"), value: 2),
                 ],
-                onChanged: (value) async{
+                onChanged: (value) async {
                   var instance = await SharedPreferences.getInstance();
                   instance.setInt("themeMode", value ?? 0);
 
@@ -89,7 +108,7 @@ class _HomepageState extends State<Homepage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DetailPage(),
+                  builder: (context) => ContactPage(),
                 ),
               );
             },

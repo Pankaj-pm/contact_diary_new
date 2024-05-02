@@ -1,6 +1,8 @@
-import 'package:contact_diary/counter_provider.dart';
-import 'package:contact_diary/home_page.dart';
-import 'package:contact_diary/theme_provider.dart';
+import 'package:contact_diary/controller/contact_provider.dart';
+import 'package:contact_diary/controller/counter_provider.dart';
+import 'package:contact_diary/view/home_page.dart';
+import 'package:contact_diary/view/login_page.dart';
+import 'package:contact_diary/controller/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,12 +18,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => CounterProvider()),
+        ChangeNotifierProvider(create: (context) => ContactProvider()),
       ],
       builder: (context, child) {
         return MaterialApp(
@@ -29,7 +34,7 @@ class _MyAppState extends State<MyApp> {
           theme: ThemeData.light(),
           darkTheme: ThemeData.dark(),
           themeMode: Provider.of<ThemeProvider>(context).getThemeMode(),
-          home: Homepage(),
+          home: LoginPage(),
         );
       },
     );
