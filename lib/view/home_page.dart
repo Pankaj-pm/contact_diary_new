@@ -4,6 +4,7 @@ import 'package:contact_diary/view/detail_page.dart';
 import 'package:contact_diary/view/login_page.dart';
 import 'package:contact_diary/controller/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -104,13 +105,33 @@ class _HomepageState extends State<Homepage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ContactPage(),
-                ),
-              );
+            onPressed: () async {
+              LocalAuthentication auth = LocalAuthentication();
+              bool canCheckBiometrics = await auth.canCheckBiometrics;
+              bool deviceSupported = await auth.isDeviceSupported();
+              print(canCheckBiometrics);
+              print(deviceSupported);
+
+              if(deviceSupported){
+                bool isAuth = await auth.authenticate(localizedReason: "Please authenticate to add Contact");
+                print("isAuth = $isAuth");
+                if (isAuth) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ContactPage(),
+                    ),
+                  );
+                }
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ContactPage(),
+                  ),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error")));
+              }
             },
             child: Icon(Icons.send),
           ),
